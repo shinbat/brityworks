@@ -9,24 +9,24 @@
 			</div>
 			<post-content v-else :post="post"/>
 			<v-card-actions>
-				<v-btn text color="orange" @click="onRetweet">
+				<v-btn text color="blue" @click="onRetweet">
 					<v-icon>mdi-twitter-retweet</v-icon>
 				</v-btn>
-				<v-btn text color="orange" @click="onClickHeart">
+				<v-btn text color="blue" @click="onClickHeart">
 					<v-icon>{{heartIcon}}</v-icon>
 				</v-btn>
-				<v-btn text color="orange" @click="onToggleComment">
+				<v-btn text color="blue" @click="onToggleComment">
 					<v-icon>mdi-comment-outline</v-icon>
 				</v-btn>
 				<v-menu offset-y open-on-hover>
 					<template v-slot:activator="{ on }">
-						<v-btn text color="orange" v-on="on">
+						<v-btn text color="blue" v-on="on">
 							<v-icon>mdi-dots-horizontal</v-icon>
 						</v-btn>
 					</template>
 					<div style="background: white">
 						<v-btn dark color="red" @click="onRemovePost">삭제</v-btn>
-						<v-btn dark color="orange" @click="onEditPost">수정</v-btn>
+						<v-btn dark color="blue" @click="onEditPost">수정</v-btn>
 					</div>
 				</v-menu>		
 			</v-card-actions>

@@ -1,6 +1,7 @@
 <template>
 	<v-container v-if="!me">
 		<v-card>
+			<v-subheader>License Management</v-subheader>
 			<v-form ref="form" v-model="valid" @submit.prevent="onSubmitForm">
 				<v-container>
 					<v-select
@@ -17,82 +18,91 @@
 						:rules="quantityRules"
 						required
 					/>
-        <v-menu
-          ref="menu1"
-          v-model="menu1"
-          :close-on-content-click="false"
-          transition="scale-transition"
-          offset-y
-          full-width
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="applyDt"
-              label="신청일자"
-              @blur="date = parseDate(applyDt)"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
-        </v-menu>
-        <v-menu
-          ref="menu2"
-          v-model="menu2"
-          :close-on-content-click="false"
-          transition="scale-transition"
-          offset-y
-          full-width
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="issueDt"
-              label="발급일자"
-              @blur="date2 = parseDate(issueDt)"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="date2" no-title @input="menu2 = false"></v-date-picker>
-        </v-menu>
-        <v-menu
-          ref="menu3"
-          v-model="menu3"
-          :close-on-content-click="false"
-          transition="scale-transition"
-          offset-y
-          full-width
-          max-width="290px"
-          min-width="290px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-text-field
-              v-model="expireDt"
-              label="만료일자"
-              @blur="date3 = parseDate(expireDt)"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker v-model="date3" no-title @input="menu3 = false"></v-date-picker>
-        </v-menu>
+					<v-menu
+						ref="menu1"
+						v-model="menu1"
+						:close-on-content-click="false"
+						transition="scale-transition"
+						offset-y
+						max-width="290px"
+						min-width="290px"
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+								v-model="applyDt"
+								label="신청일자"
+								@blur="date = parseDate(applyDt)"
+								v-on="on"
+								:rules="applyDtRules"
+							></v-text-field>
+						</template>
+						<v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
+					</v-menu>
+					<v-menu
+						ref="menu2"
+						v-model="menu2"
+						:close-on-content-click="false"
+						transition="scale-transition"
+						offset-y
+						max-width="290px"
+						min-width="290px"
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+								v-model="issueDt"
+								label="발급일자"
+								@blur="date2 = parseDate(issueDt)"
+								v-on="on"
+								:rules="issueDtRules"
+							></v-text-field>
+						</template>
+						<v-date-picker v-model="date2" no-title @input="menu2 = false"></v-date-picker>
+					</v-menu>
+					<v-menu
+						ref="menu3"
+						v-model="menu3"
+						:close-on-content-click="false"
+						transition="scale-transition"
+						offset-y
+						max-width="290px"
+						min-width="290px"
+					>
+						<template v-slot:activator="{ on }">
+							<v-text-field
+								v-model="expireDt"
+								label="만료일자"
+								@blur="date3 = parseDate(expireDt)"
+								v-on="on"
+								:rules="expireDtRules"
+							></v-text-field>
+						</template>
+						<v-date-picker v-model="date3" no-title @input="menu3 = false"></v-date-picker>
+					</v-menu>
 
 					<v-select
 						:items="status"
 						v-model="status"
 						label="상태"
-						:rule="statusRules"
 						required
 					></v-select>
 					<v-text-field
 						v-model="applicant"
-						:rules="applicantRules"
 						label="신청자"
+						:rules="applicantRules"
 						required
 					/>
-					<input ref="imageInput" type="file" multiple hidden @change="onChangeImages">
-					<v-btn type="button" @click="onClickImageUpload">라이센스파일</v-btn>
+
+					<input ref="fileInput" type="file" accept=".zip" hidden @change="onChangeFiles">
+					<v-btn type="button" @click="onClickFileUpload">라이센스파일</v-btn>
+					<div>
+						<div v-for="(p, i) in filePaths" :key="p" style="display: inline-block">
+							<div>
+								<a href="#">{{p}}</a>
+								<button @click="onRemoveFile(i)" type="button">삭제</button>
+							</div>
+						</div>
+					</div>
+
 					<v-divider style="margin: 20px"></v-divider>
 					<v-btn type="submit" dark color="indigo" >저장</v-btn>
 					<v-btn nuxt to="/community/license">목록</v-btn>
@@ -105,7 +115,7 @@
 			<v-container>
 				{{me.nickname}}님 로그인되었습니다,
 				<v-btn @click="onLogOut">로그아웃</v-btn>
-				<v-row>
+				<v-row>-
 					<v-col cols="4">{{me.Followings.length}} 팔로잉</v-col>
 					<v-col cols="4">{{me.Followers.length}} 팔로워</v-col>
 					<v-col cols="4">{{me.Posts.length}} 게시글</v-col>
@@ -115,11 +125,8 @@
 	</v-container>
 </template>
 <script>
-
-
+import { mapState } from 'vuex';
 export default {
-
-
 	data()	{
 		return {
 			types: ['디자이너', 'Bot'],
@@ -144,8 +151,14 @@ export default {
 			quantityRules:  [
 				v => !!v || '수량은 필수입니다',
 			],
-			statusRules:  [
-				v => !!v || '상태는 필수입니다',
+			applyDtRules:  [
+				v => !!v || '신청일자는 필수입니다',
+			],
+			issueDtRules:  [
+				v => !!v || '발급일자는 필수입니다',
+			],
+			expireDtRules:  [
+				v => !!v || '만료일자는 필수입니다',
 			],
 			applicantRules:  [
 				v => !!v || '신청자는 필수입니다',
@@ -166,7 +179,9 @@ export default {
 		},
     computedDateFormatted () {
       return this.formatDate(this.date);
-    },		
+		},
+
+		...mapState('license', ['filePaths']),		
 	},	
 	watch: {
 		date (val) {
@@ -191,19 +206,19 @@ export default {
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 			},
 
-			onClickImageUpload() {
-				this.$refs.imageInput.click();
+			onClickFileUpload() {
+				this.$refs.fileInput.click();
 			},
-			onChangeImages(e) {
+			onChangeFiles(e) {
 				console.log(e.target.files);
-				const imageFormData = new FormData();
+				const fileFormData = new FormData();
 				[].forEach.call(e.target.files, (f) => {
-					imageFormData.append('image', f);	// { image: [fiel1, file2] }
+					fileFormData.append('files', f);	// { image: [fiel1, file2] }
 				});
-				this.$store.dispatch('posts/uploadImages', imageFormData);
+				this.$store.dispatch('license/uploadFiles', fileFormData);
 			},
-			onRemoveImage(index) {
-				this.$store.commit('posts/removeImagePath', index);
+			onRemoveFile(index) {
+				this.$store.commit('license/removeFilePath', index);
 			},			
 			
 		onSubmitForm() {
@@ -219,9 +234,9 @@ export default {
 					applicant: this.applicant,
 				})
 					.then(() => {
-						// this.$router.push({
-						// 	path: '/',
-						// });
+						this.$router.push({
+							path: '/community/license',
+						});
 					})
 					.catch(() => {
 						alert('라이센스등록 실패');
